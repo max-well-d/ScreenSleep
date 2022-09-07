@@ -35,7 +35,6 @@ namespace ScreenSleep
                 keyValue.Append(e.KeyCode.ToString().Substring(1));
             }
             ActiveControl.Text = "";
-            //设置当前活动控件的文本内容
             ActiveControl.Text = keyValue.ToString();
         }
 
@@ -181,9 +180,11 @@ namespace ScreenSleep
             SettingForms.apply.Click += Apply_Click;
             SettingForms.yes.Click += Yes_Click;
             SettingForms.cancel.Click += Cancel_Click;
+            SettingForms.FormClosing += SettingForms_FormClosing;
             string outmod = NowModifier.ToString().Replace(",", "+").Replace(" ",string.Empty);
             SettingForms.textBox1.Text = outmod+"+"+Nowkeys.ToString();
             SettingForms.textBox2.Text = Delay.ToString();
+            
 
             Icons = new NotifyIcon()
             {
@@ -197,6 +198,12 @@ namespace ScreenSleep
             };
             Icons.DoubleClick += Icons_DoubleClick;
             SystemHotKey.RegKey(Handle,Nowkeys, NowModifier);
+        }
+
+        private void SettingForms_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SettingForms.Visible = false;
+            e.Cancel = true;
         }
 
         static public void SaveIni(SystemHotKey.KeyModifiers keyModifiers, Keys keys, int delay)
@@ -255,6 +262,7 @@ namespace ScreenSleep
         private void Exit(object sender, EventArgs e)
         {
             SystemHotKey.UnRegKey(Handle);
+            SettingForms.Dispose();
             Icons.Visible = false;
             Application.Exit();
         }
