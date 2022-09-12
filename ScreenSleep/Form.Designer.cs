@@ -35,8 +35,8 @@ namespace ScreenSleep
             this.cancel = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.hotkey_textbox = new System.Windows.Forms.TextBox();
+            this.delay_textbox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -95,23 +95,23 @@ namespace ScreenSleep
             // 
             // textBox1
             // 
-            this.textBox1.BackColor = System.Drawing.Color.White;
-            this.textBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox1.Location = new System.Drawing.Point(76, 19);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(146, 23);
-            this.textBox1.TabIndex = 5;
-            this.textBox1.Text = "Ctrl+Shift+P";
+            this.hotkey_textbox.BackColor = System.Drawing.Color.White;
+            this.hotkey_textbox.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.hotkey_textbox.Location = new System.Drawing.Point(76, 19);
+            this.hotkey_textbox.Name = "textBox1";
+            this.hotkey_textbox.ReadOnly = true;
+            this.hotkey_textbox.Size = new System.Drawing.Size(146, 23);
+            this.hotkey_textbox.TabIndex = 5;
+            this.hotkey_textbox.Text = "Ctrl+Shift+P";
             // 
             // textBox2
             // 
-            this.textBox2.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox2.Location = new System.Drawing.Point(102, 65);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(92, 23);
-            this.textBox2.TabIndex = 6;
-            this.textBox2.Text = "300";
+            this.delay_textbox.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.delay_textbox.Location = new System.Drawing.Point(102, 65);
+            this.delay_textbox.Name = "textBox2";
+            this.delay_textbox.Size = new System.Drawing.Size(92, 23);
+            this.delay_textbox.TabIndex = 6;
+            this.delay_textbox.Text = "300";
             // 
             // label3
             // 
@@ -127,8 +127,8 @@ namespace ScreenSleep
             // 
             this.ClientSize = new System.Drawing.Size(234, 161);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.delay_textbox);
+            this.Controls.Add(this.hotkey_textbox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cancel);
@@ -159,8 +159,8 @@ namespace ScreenSleep
         public System.Windows.Forms.Button apply;
         public System.Windows.Forms.Button yes;
         public System.Windows.Forms.Button cancel;
-        public System.Windows.Forms.TextBox textBox1;
-        public System.Windows.Forms.TextBox textBox2;
+        public System.Windows.Forms.TextBox hotkey_textbox;
+        public System.Windows.Forms.TextBox delay_textbox;
         private System.Windows.Forms.Label label3;
     }
 }

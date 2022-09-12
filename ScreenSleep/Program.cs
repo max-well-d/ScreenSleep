@@ -61,16 +61,16 @@ namespace ScreenSleep
             bool flag = true;
             SystemHotKey.KeyModifiers keyModifiers = SystemHotKey.KeyModifiers.None;
             Keys key = new Keys();
-            string[] hotkeys = textBox1.Text.Split('+');
-            if (textBox1.Text == String.Empty)
+            string[] hotkeys = hotkey_textbox.Text.Split('+');
+            if (hotkey_textbox.Text == String.Empty)
             {
                 keyModifiers = MakeNotifyIcon.NowModifier;
                 key = MakeNotifyIcon.Nowkeys;
                 flag = false;
             }
-            if (textBox2.Text == String.Empty)
+            if (delay_textbox.Text == String.Empty)
             {
-                textBox2.Text = "0";
+                delay_textbox.Text = "0";
             }
             if(flag)
                 foreach (var tmp in hotkeys)
@@ -93,8 +93,8 @@ namespace ScreenSleep
                 }
             keyModifier = keyModifiers;
             keys = key;
-            MakeNotifyIcon.Delay = Convert.ToInt32(textBox2.Text);
-            MakeNotifyIcon.SaveIni(keyModifier, keys, Convert.ToInt32(textBox2.Text));
+            MakeNotifyIcon.Delay = Convert.ToInt32(delay_textbox.Text);
+            MakeNotifyIcon.SaveIni(keyModifier, keys, Convert.ToInt32(delay_textbox.Text));
             return flag;
         }
         public bool YesClick(object sender, EventArgs e, out SystemHotKey.KeyModifiers keyModifiers, out Keys keys)
@@ -107,7 +107,7 @@ namespace ScreenSleep
     {
 
         //配置文件路径，可以扩展做成多配置文件
-        private static string IniFilePath = @".\Config.ini";
+        private static string IniFilePath = @".\ScreenSleepConfig.ini";
 
         [DllImport("kernel32.dll")]
         private static extern long WritePrivateProfileString(string section, string key, string value, string filepath);
@@ -128,6 +128,15 @@ namespace ScreenSleep
         public static void SetValue(string section, string key, string value)
         {
             WritePrivateProfileString(section, key, value, IniFilePath);
+            FileInfo fileInfo = new FileInfo(IniFilePath);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Attributes = FileAttributes.Hidden;
+            }
+            else
+            {
+                MessageBox.Show("创建配置文件失败","Error",MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 
@@ -151,6 +160,21 @@ namespace ScreenSleep
             get => delay;
             set => delay = value;
         }
+
+        static private string HK_tb;
+        static public string HK_TB
+        {
+            get => HK_tb;
+            set => HK_tb=value;
+        }
+
+        static private string Delay_tb;
+        static public string Delay_TB
+        {
+            get => Delay_tb;
+            set => Delay_tb = value;
+        }
+
         static public SystemHotKey.KeyModifiers NowModifier;
         static public Keys Nowkeys;
         private Setting SettingForms = new Setting();
@@ -173,23 +197,24 @@ namespace ScreenSleep
                 Settingini.GetValue("Main", "Delay", out delaytmp);
                 Delay = Convert.ToInt32(delaytmp);
             }
-                
-            SettingForms.textBox1.KeyDown += TextBox1_KeyDown;
-            SettingForms.textBox1.KeyUp += TextBox1_KeyUp;
-            SettingForms.textBox2.KeyPress += TextBox2_KeyPress;
+            
+            SettingForms.hotkey_textbox.KeyDown += Hotkey_textbox_KeyDown;
+            SettingForms.hotkey_textbox.KeyUp += Hotkey_textbox_KeyUp;
+            SettingForms.delay_textbox.KeyPress += Delay_textbox_KeyPress;
             SettingForms.apply.Click += Apply_Click;
             SettingForms.yes.Click += Yes_Click;
             SettingForms.cancel.Click += Cancel_Click;
+            SettingForms.VisibleChanged += SettingForms_VisibleChanged;
             SettingForms.FormClosing += SettingForms_FormClosing;
             string outmod = NowModifier.ToString().Replace(",", "+").Replace(" ",string.Empty);
-            SettingForms.textBox1.Text = outmod+"+"+Nowkeys.ToString();
-            SettingForms.textBox2.Text = Delay.ToString();
-            
-
+            SettingForms.hotkey_textbox.Text = outmod+"+"+Nowkeys.ToString();
+            SettingForms.delay_textbox.Text = Delay.ToString();
+            HK_TB = SettingForms.hotkey_textbox.Text;
+            Delay_TB = SettingForms.delay_textbox.Text;
             Icons = new NotifyIcon()
             {
                 Icon = Properties.Resources.icon,
-
+                Text = "快速黑屏v1.0：双击托盘图标,或右键打开设置快捷键",
                 ContextMenu = new ContextMenu(new MenuItem[] {
                     new MenuItem("setting", Setting),
                     new MenuItem("Exit", Exit)
@@ -198,6 +223,18 @@ namespace ScreenSleep
             };
             Icons.DoubleClick += Icons_DoubleClick;
             SystemHotKey.RegKey(Handle,Nowkeys, NowModifier);
+        }
+
+        private void SettingForms_VisibleChanged(object sender, EventArgs e)
+        {
+            if (SettingForms.hotkey_textbox.Text != HK_TB)
+            {
+                SettingForms.hotkey_textbox.Text = HK_TB;
+            }
+            if (SettingForms.delay_textbox.Text != Delay_TB)
+            {
+                SettingForms.delay_textbox.Text = Delay_TB;
+            }
         }
 
         private void SettingForms_FormClosing(object sender, FormClosingEventArgs e)
@@ -229,7 +266,11 @@ namespace ScreenSleep
             SettingForms.Visible = false;
             SystemHotKey.UnRegKey(Handle);
             if(SettingForms.YesClick(sender, e, out NowModifier, out Nowkeys))
+            {
                 SystemHotKey.RegKey(Handle, Nowkeys, NowModifier);
+                HK_TB = SettingForms.hotkey_textbox.Text;
+                Delay_TB = SettingForms.delay_textbox.Text;
+            }
 
         }
 
@@ -237,19 +278,23 @@ namespace ScreenSleep
         {
             SystemHotKey.UnRegKey(Handle);
             if (SettingForms.ApplyClick(sender, e, out NowModifier, out Nowkeys))
+            {
                 SystemHotKey.RegKey(Handle, Nowkeys, NowModifier);
+                HK_TB = SettingForms.hotkey_textbox.Text;
+                Delay_TB = SettingForms.delay_textbox.Text;
+            }
         }
 
-        private void TextBox2_KeyPress(object sender, KeyPressEventArgs e)
+        private void Delay_textbox_KeyPress(object sender, KeyPressEventArgs e)
         {
             SettingForms.keyPress(sender, e);
         }
 
-        private void TextBox1_KeyDown(object sender, KeyEventArgs e)
+        private void Hotkey_textbox_KeyDown(object sender, KeyEventArgs e)
         {
             SettingForms.keyDown(sender, e);
         }
-        private void TextBox1_KeyUp(object sender, KeyEventArgs e)
+        private void Hotkey_textbox_KeyUp(object sender, KeyEventArgs e)
         {
             SettingForms.keyUp(sender, e);
         }
@@ -285,7 +330,7 @@ namespace ScreenSleep
         protected override void WndProc(ref Message m)
         {
             
-            if (m.Msg == WM_HOTKEY && m.WParam.ToInt32() == SystemHotKey.HotKeyID)
+            if (m.Msg == WM_HOTKEY && m.WParam.ToInt32() == SystemHotKey.HotKeyID && SettingForms.Visible == false)
             {
                 Thread.Sleep(Delay);
                 SystemScreenSleep.Close_Screen(Handle);
