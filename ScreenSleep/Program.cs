@@ -340,7 +340,7 @@ namespace ScreenSleep
     }
     class SystemHotKey
     {
-        public const int HotKeyID = 114514; //热键ID
+        public static int HotKeyID = 0x1BF52; //热键ID
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, KeyModifiers fsModifiers, Keys vk);
